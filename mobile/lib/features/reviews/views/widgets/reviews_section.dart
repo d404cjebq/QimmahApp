@@ -19,7 +19,7 @@ class ReviewsSection extends StatelessWidget {
   const ReviewsSection({super.key, required this.trailName});
 
   // إيميل الدعم لاستقبال البلاغات (غيّره لإيميلك الحقيقي)
-  static const _supportEmail = 'support@YOUR-DOMAIN.com';
+  static const _supportEmail = 'qimmah.info@gmail.com';
 
   Future<void> _onReport(BuildContext context, Review review) async {
     final l10n = context.l10n;
