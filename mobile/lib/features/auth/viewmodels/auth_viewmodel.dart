@@ -124,6 +124,17 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<bool> deleteAccount() async {
+    try {
+      await repository.deleteAccount();
+      user = null;
+      notifyListeners();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   // تنادى من ApiClient لما تنتهي الجلسة.
   // التوكن انمسح هناك، فهنا نصفّر حالة المستخدم بس (بدون طلب للسيرفر)
   void handleSessionExpired() {

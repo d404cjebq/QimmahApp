@@ -72,6 +72,32 @@ def update_current_user(current_user):
     data = request.get_json(silent=True) or {}
     user = current_user.update_name(data.get("name"))
     return jsonify({"user": user.to_dict()}), 200
+
+
+@users_bp.delete("/me")
+@login_required
+def delete_current_user(current_user):
+    """Delete my account and all my data (App Store requirement).
+    ---
+    tags:
+      - Users
+    security:
+      - Bearer: []
+    responses:
+      200:
+        description: Account deleted
+      401:
+        description: Missing or expired token
+      403:
+        description: Admin accounts cannot be deleted here
+    """
+    if current_user.role == "admin":
+        raise APIError("Admin accounts cannot be deleted here", 403)
+    db.session.delete(current_user)
+    db.session.commit()
+    return jsonify({"message": "Account deleted"}), 200
+
+
 # ---------- Reviews (endpoint 7) ----------
 
 @users_bp.get("/me/reviews")

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/guest_login_sheet.dart';
@@ -16,6 +17,20 @@ class ReviewsSection extends StatelessWidget {
   final String trailName;
 
   const ReviewsSection({super.key, required this.trailName});
+
+  // إيميل الدعم لاستقبال البلاغات (غيّره لإيميلك الحقيقي)
+  static const _supportEmail = 'support@YOUR-DOMAIN.com';
+
+  Future<void> _onReport(BuildContext context, Review review) async {
+    final l10n = context.l10n;
+    final uri = Uri.parse(
+      'mailto:$_supportEmail'
+      '?subject=${Uri.encodeComponent(l10n.reportReviewSubject)}'
+      '&body=${Uri.encodeComponent('Review ID: ${review.id}')}',
+    );
+    final ok = await launchUrl(uri);
+    if (!ok && context.mounted) _toast(context, l10n.reportReviewFailed);
+  }
 
   void _toast(BuildContext context, String message) {
     ScaffoldMessenger.of(context)
@@ -135,7 +150,11 @@ class ReviewsSection extends StatelessWidget {
               onDelete: () => _onDelete(context, mine),
             ),
           for (final review in vm.reviews)
-            if (review.id != mine?.id) ReviewTile(review: review),
+            if (review.id != mine?.id)
+              ReviewTile(
+                review: review,
+                onReport: () => _onReport(context, review),
+              ),
         ],
       ],
     );
